@@ -4,7 +4,7 @@ import glob
 import os
 import shutil
 from urllib.parse import unquote, urlparse
-
+from memory_profiler import profile
 import numpy as np
 import supervisely as sly
 from cv2 import connectedComponents
@@ -88,6 +88,7 @@ def convert_and_upload_supervisely_project(
     batch_size = 1
     ds_name = "ds"
 
+    # @profile
     def create_ann(image_path):
         labels = []
 
@@ -145,25 +146,29 @@ def convert_and_upload_supervisely_project(
 
     dataset = api.dataset.create(project.id, ds_name, change_name_if_conflict=True)
     progress = sly.Progress("Create dataset {}".format(ds_name), 1000)
+    
+    @profile
+    def do_batch(images_names):
+        for images_names_batch in sly.batched(images_names, batch_size=batch_size):
+            images_pathes_batch = [
+                os.path.join(curr_images_path, im_name) for im_name in images_names_batch
+            ]
+
+            img_infos = api.image.upload_paths(
+                dataset.id, images_names_batch, images_pathes_batch
+            )
+            img_ids = [im_info.id for im_info in img_infos]
+
+            anns = [create_ann(image_path) for image_path in images_pathes_batch]
+            api.annotation.upload_anns(img_ids, anns)
+
+            progress.iters_done_report(len(images_names_batch))
 
     for zone in tag_names:
         curr_images_path = os.path.join(images_path, zone)
         curr_masks_path = os.path.join(masks_path, zone)
         if dir_exists(curr_images_path):
             images_names = os.listdir(curr_images_path)
+            do_batch(images_names)
 
-            for images_names_batch in sly.batched(images_names, batch_size=batch_size):
-                images_pathes_batch = [
-                    os.path.join(curr_images_path, im_name) for im_name in images_names_batch
-                ]
-
-                img_infos = api.image.upload_paths(
-                    dataset.id, images_names_batch, images_pathes_batch
-                )
-                img_ids = [im_info.id for im_info in img_infos]
-
-                anns = [create_ann(image_path) for image_path in images_pathes_batch]
-                api.annotation.upload_anns(img_ids, anns)
-
-                progress.iters_done_report(len(images_names_batch))
     return project
