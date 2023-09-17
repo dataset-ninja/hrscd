@@ -85,7 +85,7 @@ def convert_and_upload_supervisely_project(
     images_path = f"{dataset_path}/images_2012/2012"
     masks_path = f"{dataset_path}/labels_land_cover_2012/2012"
     images_ext = ".tif"
-    batch_size = 3
+    batch_size = 1
     ds_name = "ds"
 
     def create_ann(image_path):
