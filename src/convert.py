@@ -37,7 +37,8 @@ def download_dataset(teamfiles_dir: str) -> str:
 
         sly.logger.info(f"Start unpacking archive '{file_name_with_ext}'...")
         local_path = os.path.join(storage_dir, file_name_with_ext)
-        teamfiles_path = os.path.join(teamfiles_dir, file_name_with_ext)
+        # teamfiles_path = os.path.join(teamfiles_dir, file_name_with_ext)
+        teamfiles_path = teamfiles_dir
 
         fsize = api.file.get_directory_size(team_id, teamfiles_dir)
         with tqdm(desc=f"Downloading '{file_name_with_ext}' to buffer...", total=fsize) as pbar:
