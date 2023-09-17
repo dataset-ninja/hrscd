@@ -32,8 +32,8 @@ def download_dataset(teamfiles_dir: str) -> str:
 
     if isinstance(s.DOWNLOAD_ORIGINAL_URL, str):
         parsed_url = urlparse(s.DOWNLOAD_ORIGINAL_URL)
-        file_name_with_ext = os.path.basename(parsed_url.path)
-        file_name_with_ext = unquote(file_name_with_ext)
+        # file_name_with_ext = os.path.basename(parsed_url.path)
+        file_name_with_ext = "hrscd.zip"
 
         sly.logger.info(f"Start unpacking archive '{file_name_with_ext}'...")
         local_path = os.path.join(storage_dir, file_name_with_ext)
