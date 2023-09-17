@@ -22,15 +22,62 @@ from supervisely.io.fs import (
 from tqdm import tqdm
 
 import src.settings as s
+from tqdm import tqdm
 
+def download_dataset(teamfiles_dir: str) -> str:
+    """Use it for large datasets to convert them on the instance"""
+    api = sly.Api.from_env()
+    team_id = sly.env.team_id()
+    storage_dir = sly.app.get_data_dir()
+
+    if isinstance(s.DOWNLOAD_ORIGINAL_URL, str):
+        parsed_url = urlparse(s.DOWNLOAD_ORIGINAL_URL)
+        file_name_with_ext = os.path.basename(parsed_url.path)
+        file_name_with_ext = unquote(file_name_with_ext)
+
+        sly.logger.info(f"Start unpacking archive '{file_name_with_ext}'...")
+        local_path = os.path.join(storage_dir, file_name_with_ext)
+        teamfiles_path = os.path.join(teamfiles_dir, file_name_with_ext)
+
+        fsize = api.file.get_directory_size(team_id, teamfiles_dir)
+        with tqdm(desc=f"Downloading '{file_name_with_ext}' to buffer...", total=fsize) as pbar:
+            api.file.download(team_id, teamfiles_path, local_path, progress_cb=pbar)
+        dataset_path = unpack_if_archive(local_path)
+
+    if isinstance(s.DOWNLOAD_ORIGINAL_URL, dict):
+        for file_name_with_ext, url in s.DOWNLOAD_ORIGINAL_URL.items():
+            local_path = os.path.join(storage_dir, file_name_with_ext)
+            teamfiles_path = os.path.join(teamfiles_dir, file_name_with_ext)
+
+            if not os.path.exists(get_file_name(local_path)):
+                fsize = api.file.get_directory_size(team_id, teamfiles_dir)
+                with tqdm(
+                    desc=f"Downloading '{file_name_with_ext}' to buffer...",
+                    total=fsize,
+                    unit="B",
+                    unit_scale=True,
+                ) as pbar:
+                    api.file.download(team_id, teamfiles_path, local_path, progress_cb=pbar)
+
+                sly.logger.info(f"Start unpacking archive '{file_name_with_ext}'...")
+                unpack_if_archive(local_path)
+            else:
+                sly.logger.info(
+                    f"Archive '{file_name_with_ext}' was already unpacked to '{os.path.join(storage_dir, get_file_name(file_name_with_ext))}'. Skipping..."
+                )
+
+        dataset_path = storage_dir
+    return dataset_path
+    
 
 def convert_and_upload_supervisely_project(
     api: sly.Api, workspace_id: int, project_name: str
 ) -> sly.ProjectInfo:
     # project_name = "HRSCD"
-    dataset_path = "/mnt/d/datasetninja/hrscd"
-    images_path = "/mnt/d/datasetninja/hrscd/images_2012/2012"
-    masks_path = "/mnt/d/datasetninja/hrscd/labels_land_cover_2012/2012"
+    # dataset_path = "/mnt/d/datasetninja/hrscd"
+    dataset_path = download_dataset("/4import/hrscd/hrscd.zip")
+    images_path = f"{dataset_path}/hrscd/images_2012/2012"
+    masks_path = f"{dataset_path}/hrscd/labels_land_cover_2012/2012"
     images_ext = ".tif"
     batch_size = 3
     ds_name = "ds"
