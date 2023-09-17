@@ -41,7 +41,12 @@ def download_dataset(teamfiles_dir: str) -> str:
         teamfiles_path = teamfiles_dir
 
         fsize = api.file.get_directory_size(team_id, teamfiles_dir)
-        with tqdm(desc=f"Downloading '{file_name_with_ext}' to buffer...", total=fsize) as pbar:
+        with tqdm(
+            desc=f"Downloading '{file_name_with_ext}' to buffer...",
+            total=fsize,
+            unit="B",
+            unit_scale=True,
+            ) as pbar:
             api.file.download(team_id, teamfiles_path, local_path, progress_cb=pbar)
         dataset_path = unpack_if_archive(local_path)
 
@@ -77,8 +82,8 @@ def convert_and_upload_supervisely_project(
     # project_name = "HRSCD"
     # dataset_path = "/mnt/d/datasetninja/hrscd"
     dataset_path = download_dataset("/4import/hrscd/hrscd.zip")
-    images_path = f"{dataset_path}/hrscd/images_2012/2012"
-    masks_path = f"{dataset_path}/hrscd/labels_land_cover_2012/2012"
+    images_path = f"{dataset_path}/images_2012/2012"
+    masks_path = f"{dataset_path}/labels_land_cover_2012/2012"
     images_ext = ".tif"
     batch_size = 3
     ds_name = "ds"
