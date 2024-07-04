@@ -13,37 +13,44 @@ from dataset_tools.templates import (
 ##################################
 # * Before uploading to instance #
 ##################################
-PROJECT_NAME: str = None
-PROJECT_NAME_FULL: str = None
+PROJECT_NAME: str = "HRSCD"
+PROJECT_NAME_FULL: str = "HRSCD: High Resolution Semantic Change Detection"
 HIDE_DATASET = True  # set False when 100% sure about repo quality
 
 ##################################
 # * After uploading to instance ##
 ##################################
-LICENSE: License = None
-APPLICATIONS: List[Union[Industry, Domain, Research]] = None
-CATEGORY: Category = None
+LICENSE: License = License.CC_BY_NC_SA_4_0(source_url="https://rcdaudt.github.io/hrscd/#copyright")
+APPLICATIONS: List[Union[Industry, Domain, Research]] = [Domain.Geospatial()]
+CATEGORY: Category = Category.Aerial(extra=Category.Satellite())
 
-CV_TASKS: List[CVTask] = None
-ANNOTATION_TYPES: List[AnnotationType] = None
+CV_TASKS: List[CVTask] = [CVTask.SemanticSegmentation()]
+ANNOTATION_TYPES: List[AnnotationType] = [AnnotationType.SemanticSegmentation()]
 
 RELEASE_DATE: Optional[str] = None  # e.g. "YYYY-MM-DD"
 if RELEASE_DATE is None:
-    RELEASE_YEAR: int = None
+    RELEASE_YEAR: int = 2019
 
-HOMEPAGE_URL: str = None
+HOMEPAGE_URL: str = "https://ieee-dataport.org/open-access/hrscd-high-resolution-semantic-change-detection-dataset"
 # e.g. "https://some.com/dataset/homepage"
 
 PREVIEW_IMAGE_ID: int = None
 # This should be filled AFTER uploading images to instance, just ID of any image.
 
-GITHUB_URL: str = None
+GITHUB_URL: str = "https://github.com/dataset-ninja/hrscd"
 # URL to GitHub repo on dataset ninja (e.g. "https://github.com/dataset-ninja/some-dataset")
 
 ##################################
 ### * Optional after uploading ###
 ##################################
-DOWNLOAD_ORIGINAL_URL: Optional[Union[str, dict]] = None
+DOWNLOAD_ORIGINAL_URL: Optional[Union[str, dict]] = {
+    "Land cover labels 2006 labels_land_cover_2006.zip (219.99 MB)":"https://ieee-dataport.org/open-access/hrscd-high-resolution-semantic-change-detection-dataset#",
+    "Land cover labels 2012 labels_land_cover_2012.zip (220.52 MB)":"https://ieee-dataport.org/open-access/hrscd-high-resolution-semantic-change-detection-dataset#",
+    "Change labels labels_change.zip (20.32 MB)": "https://ieee-dataport.org/open-access/hrscd-high-resolution-semantic-change-detection-dataset#",
+    "Images 2012 images_2012.zip (4.63 GB)":"https://ieee-dataport.org/open-access/hrscd-high-resolution-semantic-change-detection-dataset#",
+    "Images 2006 images_2006.zip (3.48 GB)":"https://ieee-dataport.org/open-access/hrscd-high-resolution-semantic-change-detection-dataset#",
+    "README README.txt (2.84 kB)":"https://ieee-dataport.org/open-access/hrscd-high-resolution-semantic-change-detection-dataset#",
+}
 # Optional link for downloading original dataset (e.g. "https://some.com/dataset/download")
 
 CLASS2COLOR: Optional[Dict[str, List[str]] | Literal["predefined"]] = "predefined"
@@ -51,21 +58,21 @@ CLASS2COLOR: Optional[Dict[str, List[str]] | Literal["predefined"]] = "predefine
 
 # If you have more than the one paper, put the most relatable link as the first element of the list
 # Use dict key to specify name for a button
-PAPER: Optional[Union[str, List[str], Dict[str, str]]] = None
-BLOGPOST: Optional[Union[str, List[str], Dict[str, str]]] = None
+PAPER: Optional[Union[str, List[str], Dict[str, str]]] = "https://rcdaudt.github.io/files/2018cviu-hrscd.pdf"
+BLOGPOST: Optional[Union[str, List[str], Dict[str, str]]] = "https://rcdaudt.github.io/hrscd"
 REPOSITORY: Optional[Union[str, List[str], Dict[str, str]]] = {
-    "GitHub": "some_link_to_repo_if_exists"
+    "Kaggle": "https://www.kaggle.com/datasets/javidtheimmortal/high-resolution-semantic-change-detection-dataset"
 }
 
-CITATION_URL: Optional[str] = None
-AUTHORS: Optional[List[str]] = None
-AUTHORS_CONTACTS: Optional[List[str]] = None
+CITATION_URL: Optional[str] = "https://ieee-dataport.org/open-access/hrscd-high-resolution-semantic-change-detection-dataset"
+AUTHORS: Optional[List[str]] = ["Caye Daudt, Rodrigo" ,"Le Saux, Bertrand" , "Boulch, Alexandre" , "Gousseau, Yann"]
+AUTHORS_CONTACTS: Optional[List[str]] = ["rcayedaudt@ethz.ch", "bls@ieee.org", " alexandre.boulch@valeo.com", "yann.gousseau@telecom-paris.fr"]
 
-ORGANIZATION_NAME: Optional[Union[str, List[str]]] = None
-ORGANIZATION_URL: Optional[Union[str, List[str]]] = None
+ORGANIZATION_NAME: Optional[Union[str, List[str]]] = ["ETH Zürich, Switzerland", "European Space Agency, France", "Valeo.ai, France", "Télécom Paris, France"]
+ORGANIZATION_URL: Optional[Union[str, List[str]]] = ["https://ethz.ch/en.html", "https://www.esa.int/", "valeo.ai", "https://www.telecom-paris.fr/"]
 
 # Set '__PRETEXT__' or '__POSTTEXT__' as a key with string value to add custom text. e.g. SLYTAGSPLIT = {'__POSTTEXT__':'some text}
-SLYTAGSPLIT: Optional[Dict[str, Union[List[str], str]]] = None
+SLYTAGSPLIT: Optional[Dict[str, Union[List[str], str]]] = {"location areas": "area", "acqusition years":"year", "__POSTTEXT__":"Additionally, every image has ***im_id*** tag"}
 TAGS: Optional[
     List[
         Literal[
